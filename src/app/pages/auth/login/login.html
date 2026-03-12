@@ -1,0 +1,185 @@
+<div class="container-md d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card-login">
+        @if(!isLogin){
+        <div class="text-sm text-muted cursor-pointer" (click)="toggle()">
+            <i class="fa-solid fa-arrow-left font-bold"></i>
+            <span>
+                กลับไปยังหน้าเข้าสู่ระบบ
+            </span>
+        </div>
+        }
+        @if(!isLogin){
+        <div class="bg-img">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-shield-check w-80 h-80" aria-hidden="true">
+                <path
+                    d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z">
+                </path>
+                <path d="m9 12 2 2 4-4"></path>
+            </svg>
+        </div>
+        }
+        <div class="card-header text-center">
+            <div class="text-5xl font-bold text-primary">Safe Trade</div>
+            <div class="text-lg text-muted mt-1">
+                {{ isLogin ? 'ยินดีต้อนรับกลับมา! เข้าสู่ระบบเพื่อเริ่มการซื้อขาย' : 'สร้างบัญชีเพื่อเริ่มต้นใช้งาน' }}
+            </div>
+            @if(!isLogin){
+            <div class="text-start mt-3">
+                <div class="text-3xl font-medium">สมัครสมาชิกใหม่</div>
+                <div class="d-flex align-items-center justify-content-between mt-2">
+                    <div class="step" [class.active]="step >= 1">
+                        <div class="step-icon">1</div>
+                        <div class="text-sm">ข้อมูลบัญชี</div>
+                    </div>
+                    <div class="step" [class.active]="step >= 2">
+                        <div class="step-icon">2</div>
+                        <div class="text-sm">ข้อมูลส่วนตัว</div>
+                    </div>
+                    <div class="step" [class.active]="step >= 3">
+                        <div class="step-icon">3</div>
+                        <div class="text-sm">ยืนยันการสมัคร</div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="card-body mt-4" [class.is-sign-up]="!isLogin">
+            <!-- LOGIN -->
+            @if(isLogin){
+            <div class="fade-slide">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="fa-regular fa-envelope"></i>
+                    </span>
+                    <div class="form-floating">
+                        <input type="email" class="form-control" placeholder="อีเมล"
+                            [(ngModel)]="UserLoginRequest.Email" name="email">
+                        <label for="email">อีเมล</label>
+                    </div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-key"></i>
+                    </span>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" placeholder="รหัสผ่าน"
+                            [(ngModel)]="UserLoginRequest.Password" name="password">
+                        <label for="password">รหัสผ่าน</label>
+                    </div>
+                </div>
+            </div>
+            }
+
+
+            <!-- REGISTER -->
+            @if(!isLogin){
+            <div>
+                <!-- STEP 1 -->
+                @if(step === 1){
+                <div class="fade-slide">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-regular fa-envelope"></i>
+                        </span>
+
+                        <div class="form-floating">
+                            <input type="email" class="form-control" placeholder="อีเมล"
+                                [(ngModel)]="UserSignUpRequest.Email" name="email">
+                            <label for="email">อีเมล</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+
+                        <div class="form-floating">
+                            <input type="password" class="form-control" placeholder="รหัสผ่าน"
+                                [(ngModel)]="UserSignUpRequest.Password" name="password">
+                            <label for="password">รหัสผ่าน</label>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+
+                        <div class="form-floating">
+                            <input type="password" class="form-control" placeholder="ยืนยันรหัสผ่าน"
+                                [(ngModel)]="ConfirmPassword" name="confirmPassword">
+                            <label for="confirmPassword">ยืนยันรหัสผ่าน</label>
+                        </div>
+                    </div>
+                </div>
+                }
+
+                <!-- STEP 2 -->
+                @if(step === 2){
+
+                <div class="fade-slide">
+                    <div class="sub-card">
+                        <div class="sub-card-header text-base">
+                            ข้อมูลบัญชี
+                        </div>
+                        <div class="sub-card-body mt-3">
+                            <div class="d-flex gap-2 align-items-center">
+                                <span class="text-sm text-muted col-3">อีเมล : </span>
+                                <span class="text-sm text-bold col-9">{{ UserSignUpRequest.Email }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sub-card mt-3">
+                        <div class="sub-card-header text-base">
+                            ข้อมูลส่วนตัว
+                        </div>
+                        <div class="sub-card-body mt-3">
+                            <div class="d-flex gap-2 my-2">
+                                <span class="text-sm text-muted col-3">ชื่อ - นามสกุล : </span>
+                                <span class="text-sm text-bold col-9">{{ UserSignUpRequest.FullName }}</span>
+                            </div>
+                            <div class="d-flex gap-2 my-2">
+                                <span class="text-sm text-muted col-3">เบอร์โทร : </span>
+                                <span class="text-sm text-bold col-9">{{ UserSignUpRequest.Phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-danger text-sm mt-2">
+                    <span>*ระบบจะส่งลิงก์สำหรับยืนยันตัวตนไปยังอีเมลที่คุณได้ลงทะเบียนไว้</span>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        <div class="card-footer">
+            @if(isLogin){
+            <button class="btn btn-primary w-100" (click)="Login()">เข้าสู่ระบบ</button>
+
+            <div class="text-center mt-3">
+                <span class="text-muted">ยังไม่มีบัญชี?</span>
+                <a class="text-primary cursor-pointer" (click)="toggle()"> สมัครสมาชิก</a>
+            </div>
+            }@else {
+            <div class="d-flex justify-content-center gap-2">
+                @if(step != 1){
+                <button class="btn btn-secondary w-50" (click)="prevStep()">ย้อนกลับ</button>
+                }
+                @if(step == 2){
+                <button class="btn btn-primary w-50" (click)="Signup()">สมัครสมาชิก</button>
+                }@else {
+                <button class="btn btn-primary w-50" (click)="nextStep()">ถัดไป</button>
+                }
+            </div>
+            }
+
+        </div>
+    </div>
+</div>

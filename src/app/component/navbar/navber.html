@@ -1,0 +1,65 @@
+<div class="nav container-fluid d-none d-md-flex">
+    <div class="container-md d-flex justify-content-between align-items-center">
+        <div class="nav-menu">
+            <div class="navbar-brand">
+                <a class="d-flex align-items-center text-decoration-none">
+                    <img src="" class="me-2" alt="logo">
+                </a>
+            </div>
+            <div class="nav-item">
+                <a routerLink="/home" routerLinkActive="active">
+                    <span>หน้าหลัก</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a routerLink="/chat" routerLinkActive="active">
+                    <span>แชท/ดีล</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a routerLink="/tracking" routerLinkActive="active">
+                    <span>ติดตามพัสดุ</span>
+                </a>
+            </div>
+        </div>
+        <div class="d-flex gap-3 justify-content-end align-items-center">
+            <div class="nav-item">
+                <a class="profile" routerLink="/profile" routerLinkActive="active">
+                    <div class="profile-img">
+                        <span>{{getLogoUser()}}</span>
+                    </div>
+                    <span class="profile-name">{{stateService.user()?.FullName}}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="nav-mobile container-fluid d-md-none d-flex">
+    <div class="nav-menu">
+        <div class="nav-item">
+            <a routerLink="/home" routerLinkActive="active">
+                <i class="fa-solid fa-house-chimney"></i>
+                <div>หน้าหลัก</div>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a routerLink="/chat" routerLinkActive="active">
+                <i class="fa-regular fa-comment-dots"></i>
+                <div>แชท/ดีล</div>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a routerLink="/tracking" routerLinkActive="active">
+                <i class="fa-solid fa-truck"></i>
+                <div>ติดตามพัสดุ</div>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a routerLink="/profile" routerLinkActive="active">
+                <i class="fa-solid fa-user"></i>
+                <div>โปรไฟล์</div>
+            </a>
+        </div>
+    </div>
+</div>
