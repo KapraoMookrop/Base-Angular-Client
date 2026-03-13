@@ -22,6 +22,8 @@ import { LoginResponseData } from '../../../types/LoginResponseData';
   templateUrl: './login.html',
 })
 export class Login implements OnInit {
+  IsShowPassword: boolean = false;
+  IsShowConfirmPassword: boolean = false;
   UserLoginRequest: UserLoginRequest = {} as UserLoginRequest;
   UserSignUpRequest: UserSignUpDataRequest = {} as UserSignUpDataRequest;
   ConfirmPassword?: string;

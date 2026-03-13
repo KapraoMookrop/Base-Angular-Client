@@ -679,6 +679,15 @@ body {
   box-shadow: 0 0 0 1px var(--primary);
 }
 
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
 @media (max-width: 1000px) {
   .card-home .card-header {
     font-size: 42px;

@@ -62,9 +62,11 @@
                         <i class="fa-solid fa-key"></i>
                     </span>
                     <div class="form-floating">
-                        <input type="password" class="form-control" placeholder="รหัสผ่าน"
+                        <input [type]="IsShowPassword ? 'text' : 'password'" class="form-control" placeholder="รหัสผ่าน"
                             [(ngModel)]="UserLoginRequest.Password" name="password">
                         <label for="password">รหัสผ่าน</label>
+                        <i class="fa-regular toggle-password" [class]="IsShowPassword ? 'fa-eye' : 'fa-eye-slash'"
+                            (click)="IsShowPassword = !IsShowPassword"></i>
                     </div>
                 </div>
             </div>
@@ -95,9 +97,11 @@
                         </span>
 
                         <div class="form-floating">
-                            <input type="password" class="form-control" placeholder="รหัสผ่าน"
-                                [(ngModel)]="UserSignUpRequest.Password" name="password">
+                            <input [type]="IsShowPassword ? 'text' : 'password'" class="form-control"
+                                placeholder="รหัสผ่าน" [(ngModel)]="UserSignUpRequest.Password" name="password">
                             <label for="password">รหัสผ่าน</label>
+                            <i class="fa-regular toggle-password" [class]="IsShowPassword ? 'fa-eye' : 'fa-eye-slash'"
+                                (click)="IsShowPassword = !IsShowPassword"></i>
                         </div>
                     </div>
 
@@ -107,9 +111,11 @@
                         </span>
 
                         <div class="form-floating">
-                            <input type="password" class="form-control" placeholder="ยืนยันรหัสผ่าน"
+                            <input [type]="IsShowConfirmPassword ? 'text' : 'password'" class="form-control" placeholder="ยืนยันรหัสผ่าน"
                                 [(ngModel)]="ConfirmPassword" name="confirmPassword">
                             <label for="confirmPassword">ยืนยันรหัสผ่าน</label>
+                            <i class="fa-regular toggle-password" [class]="IsShowConfirmPassword ? 'fa-eye' : 'fa-eye-slash'"
+                                (click)="IsShowConfirmPassword = !IsShowConfirmPassword"></i>
                         </div>
                     </div>
                 </div>
