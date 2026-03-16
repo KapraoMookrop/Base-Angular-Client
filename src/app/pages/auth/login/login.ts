@@ -4,8 +4,6 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserAppService } from '../../../API/UserAppService';
 import Swal from 'sweetalert2';
-import { LoadingService } from '../../../core/LoadingService';
-import { AuthService } from '../../../core/AuthService';
 import { UserLoginRequest } from '../../../types/UserLoginRequest';
 import { UserSignUpDataRequest } from '../../../types/UserSignUpDataRequest';
 import { Router } from '@angular/router';
@@ -14,6 +12,7 @@ import { CoreAppService } from '../../../API/CoreAppService';
 import { UserClientData } from '../../../types/UserClientData';
 import { Verify2FAType } from '../../../types/Enum';
 import { LoginResponseData } from '../../../types/LoginResponseData';
+import { BaseComponent } from '../../../core/BaseComponent';
 
 @Component({
   selector: 'app-login',
@@ -21,18 +20,16 @@ import { LoginResponseData } from '../../../types/LoginResponseData';
   providers: [],
   templateUrl: './login.html',
 })
-export class Login implements OnInit {
+export class Login extends BaseComponent implements OnInit {
   IsShowPassword: boolean = false;
   IsShowConfirmPassword: boolean = false;
   UserLoginRequest: UserLoginRequest = {} as UserLoginRequest;
   UserSignUpRequest: UserSignUpDataRequest = {} as UserSignUpDataRequest;
   ConfirmPassword?: string;
 
-  constructor(public loadingService: LoadingService,
-    private readonly AuthService: AuthService,
-    private readonly UserAppService: UserAppService,
-    private readonly CoreAppService: CoreAppService,
-    private readonly router: Router) {
+  constructor(private readonly UserAppService: UserAppService,
+    private readonly CoreAppService: CoreAppService,) {
+    super();
   }
 
   ngOnInit() {
@@ -46,142 +43,54 @@ export class Login implements OnInit {
 
   async Login() {
     try {
-
-      this.loadingService.show();
       let clientLogin = await this.UserAppService.Login(this.UserLoginRequest);
-      this.loadingService.hide();
 
       if (clientLogin.IsEnabled2FA) {
 
-        const result = await Swal.fire({
-          title: 'ยืนยันตัวตน',
-          html: `<div style="text-align:center">
-                    <p style="margin-bottom:10px">กรอกรหัส 6 หลักจากแอป Authenticator</p>
-
-                    <div id="otp-container" style="display:flex; gap:10px; justify-content:center;">
-                      <input class="otp-input" maxlength="1" />
-                      <input class="otp-input" maxlength="1" />
-                      <input class="otp-input" maxlength="1" />
-                      <input class="otp-input" maxlength="1" />
-                      <input class="otp-input" maxlength="1" />
-                      <input class="otp-input" maxlength="1" />
-                    </div>
-                  </div>`,
-          showCancelButton: true,
-          confirmButtonText: 'ยืนยัน',
-          cancelButtonText: 'ยกเลิก',
-          focusConfirm: false,
-
-          didOpen: () => {
-            const inputs = document.querySelectorAll<HTMLInputElement>('.otp-input');
-
-            inputs.forEach((input, index) => {
-              input.style.width = '45px';
-              input.style.height = '55px';
-              input.style.fontSize = '24px';
-              input.style.textAlign = 'center';
-              input.style.border = '1px solid #ddd';
-              input.style.borderRadius = '8px';
-
-              input.addEventListener('input', () => {
-                if (input.value.length === 1 && index < inputs.length - 1) {
-                  inputs[index + 1].focus();
-                }
-              });
-
-              input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !input.value && index > 0) {
-                  inputs[index - 1].focus();
-                }
-              });
-            });
-
-            inputs[0].focus();
-          },
-
-          preConfirm: () => {
-            const inputs = document.querySelectorAll<HTMLInputElement>('.otp-input');
-            let code = '';
-
-            inputs.forEach(i => code += i.value);
-
-            if (code.length !== 6) {
-              Swal.showValidationMessage('กรุณากรอกรหัส 6 หลัก');
-              return false;
-            }
-
-            return code;
-          }
-        });
+        const result = await this.Swal2FAAlert();
 
         if (!result.isConfirmed) {
-          this.loadingService.hide();
           return;
         }
 
-        this.loadingService.show();
         clientLogin = await this.CoreAppService.Verify2FA(this.UserLoginRequest.Email, result.value, Verify2FAType.VERIFYLOGIN);
-        this.loadingService.hide();
       }
 
       await this.AfterLogin(clientLogin);
 
     } catch (err: HttpErrorResponse | any) {
-
-      Swal.fire({
-        icon: 'error',
-        title: 'เข้าสู่ระบบไม่สำเร็จ',
-        text: err.error?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ',
-      });
-
-    } finally {
-      this.loadingService.hide();
-    }
+      this.SwalError('เข้าสู่ระบบไม่สำเร็จ', err.error?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+    } 
   }
 
   step = 1;
-  nextStep() {
+  async nextStep() {
     switch (this.step) {
       case 1:
         if (!this.isValidEmail(this.UserSignUpRequest.Email)) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            html: `<div class="text-lg font-medium">
-                    รูปแบบอีเมลไม่ถูกต้อง
-                  </div>`,
-            showConfirmButton: false,
-            timer: 2000,
-          })
+          this.Swaltoast('รูปแบบอีเมลไม่ถูกต้อง', 'error');
           return;
         }
 
         if (!this.UserSignUpRequest.Email || !this.UserSignUpRequest.Password || !this.ConfirmPassword) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            html: `<div class="text-lg font-medium">
-                    กรุณากรอกข้อมูลให้ครบถ้วนก่อน
-                  </div>`,
-            showConfirmButton: false,
-            timer: 2000,
-          })
+          this.Swaltoast('กรุณากรอกข้อมูลให้ครบถ้วนก่อน', 'error');
           return;
         }
 
         if (this.UserSignUpRequest.Password !== this.ConfirmPassword) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            html: `<div class="text-lg font-medium">
-                    รหัสผ่านไม่ตรงกัน
-                  </div>`,
-            showConfirmButton: false,
-            timer: 2000,
-          })
+          this.Swaltoast('รหัสผ่านไม่ตรงกัน', 'error');
+          return;
+        }
+
+        const passwordValidation = await this.validatePassword(this.UserSignUpRequest.Password);
+        if (!passwordValidation.isValid) {
+          this.Swaltoast(passwordValidation.details, 'error');
+          return;
+        }
+
+        const emailExists = await this.checkAlreadyExistsEmail();
+        if (emailExists) {
+          this.Swaltoast('อีเมลนี้ถูกใช้งานแล้ว', 'error');
           return;
         }
 
@@ -197,28 +106,12 @@ export class Login implements OnInit {
   }
 
   async Signup() {
-    this.loadingService.show();
     try {
       await this.UserAppService.Signup(this.UserSignUpRequest);
-
-      Swal.fire({
-        icon: 'success',
-        title: 'สมัครสมาชิกสำเร็จ',
-        text: 'กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชีของคุณ',
-      });
-
+      this.SwalSuccess('สมัครสมาชิกสำเร็จ', 'กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชีของคุณ');
       this.isLogin = true;
-
     } catch (err: HttpErrorResponse | any) {
-      Swal.fire({
-        icon: 'error',
-        title: 'สมัครสมาชิกไม่สำเร็จ',
-        text: err.error?.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก',
-      });
-
-      console.error('Signup failed:', err);
-    } finally {
-      this.loadingService.hide();
+      this.SwalError('สมัครสมาชิกไม่สำเร็จ', err.error?.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
     }
   }
 
@@ -242,16 +135,65 @@ export class Login implements OnInit {
       IsEnabled2FA: clientData.IsEnabled2FA
     } as UserClientData;
 
-    Swal.fire({
-      icon: 'success',
-      title: 'เข้าสู่ระบบสำเร็จ',
-      text: 'ยินดีต้อนรับเข้าสู่ระบบ',
-      timer: 1500,
-      showConfirmButton: false
-    }).then(() => {
+    this.SwalAlert("เข้าสู่ระบบสำเร็จ", "ยินดีต้อนรับเข้าสู่ระบบ", "success", 1500, false).then(() => {
       this.AuthService.SetUserClient(clientData.JWT, ClientUser, '');
-      this.router.navigate(['/home']);
+      this.NavigateTo('/home');
     });
+  }
 
+  private async checkAlreadyExistsEmail() {
+    try {
+      const result = await this.UserAppService.CheckAlreadyExistsEmail(this.UserSignUpRequest.Email);
+      return result;
+    } catch (err: HttpErrorResponse | any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: err.error?.message || 'เกิดข้อผิดพลาดในการตรวจสอบอีเมล',
+      });
+      return true;
+    }
+  }
+
+  private async validatePassword(password: string): Promise<{ isValid: boolean; details: string; }> {
+    if (password.length < 8) {
+      return {
+        isValid: false,
+        details: "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร"
+      };
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return {
+        isValid: false,
+        details: "รหัสผ่านต้องประกอบด้วยตัวพิมพ์ใหญ่ อย่างน้อย 1 ตัว"
+      };
+    }
+
+    if (!/[a-z]/.test(password)) {
+      return {
+        isValid: false,
+        details: "รหัสผ่านต้องประกอบด้วยตัวพิมพ์เล็ก อย่างน้อย 1 ตัว"
+      };
+    }
+
+    if (!/\d/.test(password)) {
+      return {
+        isValid: false,
+        details: "รหัสผ่านต้องประกอบด้วยตัวเลข อย่างน้อย 1 ตัว"
+      };
+    }
+
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return {
+        isValid: false,
+        details: "รหัสผ่านต้องประกอบด้วยอักขระพิเศษ อย่างน้อย 1 ตัว"
+      };
+    }
+
+    return {
+      isValid: true,
+      details: ""
+    };
   }
 }

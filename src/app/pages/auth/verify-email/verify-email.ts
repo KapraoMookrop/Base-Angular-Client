@@ -3,10 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CoreAppService } from '../../../API/CoreAppService';
-import Swal from 'sweetalert2';
-import { LoadingService } from '../../../core/LoadingService';
-import { ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { BaseComponent } from '../../../core/BaseComponent';
 
 @Component({
   selector: 'app-verify-email',
@@ -14,12 +12,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
   providers: [],
   templateUrl: './verify-email.html',
 })
-export class VerifyEmail {
-  constructor(public loadingService: LoadingService, private CoreAppService: CoreAppService, private route: ActivatedRoute, private router: Router) {
+export class VerifyEmail extends BaseComponent {
+  constructor(private CoreAppService: CoreAppService) {
+    super();
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this.Route.paramMap.subscribe(params => {
       const token = params.get('verifyToken');
       if (token) {
         this.VerifyEmail(token);
@@ -28,26 +27,13 @@ export class VerifyEmail {
   }
 
   async VerifyEmail(verifyToken: string) {
-    this.loadingService.show();
     try {
       await this.CoreAppService.VerifyEmail(verifyToken);
-      Swal.fire({
-        icon: 'success',
-        title: 'ยืนยันอีเมลสำเร็จ',
-        text: 'สามารถเข้าสู่ระบบได้เลย ขอบคุณที่ยืนยันอีเมลของคุณกับเรา',
-        timer: 1500,
-        showConfirmButton: false
-      }).then(() => {
-        this.router.navigate(['/login'])
+      this.SwalAlert('ยืนยันอีเมลสำเร็จ', 'สามารถเข้าสู่ระบบได้เลย ขอบคุณที่ยืนยันอีเมลของคุณกับเรา', 'success').then(() => {
+        this.NavigateTo('/login');
       });
     } catch (err: HttpErrorResponse | any) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ยืนยันอีเมลไม่สำเร็จ',
-        text: err.error?.message || 'เกิดข้อผิดพลาดในการยืนยันอีเมลของคุณ',
-      });
-    } finally {
-      this.loadingService.hide();
+      this.SwalError('ยืนยันอีเมลไม่สำเร็จ', err.error?.message || 'เกิดข้อผิดพลาดในการยืนยันอีเมลของคุณ');
     }
   }
 }

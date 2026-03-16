@@ -264,6 +264,13 @@ body {
   position: relative;
 }
 
+.card-login.is-sign-up {
+  height: 650px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .card-login .bg-img {
   pointer-events: none;
   width: fit-content;
@@ -275,9 +282,7 @@ body {
   opacity: 0.1;
 }
 
-.card-login .card-body.is-sign-up {
-  height: 600px;
-  max-height: 60vh;
+.card-login.is-sign-up .card-body {
   position: relative;
   z-index: 1;
   overflow-y: auto;

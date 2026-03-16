@@ -1,5 +1,5 @@
 <div class="container-md d-flex justify-content-center align-items-center" style="height: 100vh;">
-    <div class="card-login">
+    <div class="card-login" [class.is-sign-up]="!isLogin">
         @if(!isLogin){
         <div class="text-sm text-muted cursor-pointer" (click)="toggle()">
             <i class="fa-solid fa-arrow-left font-bold"></i>
@@ -42,7 +42,7 @@
             }
         </div>
 
-        <div class="card-body mt-4" [class.is-sign-up]="!isLogin">
+        <div class="card-body mt-4">
             <!-- LOGIN -->
             @if(isLogin){
             <div class="fade-slide">

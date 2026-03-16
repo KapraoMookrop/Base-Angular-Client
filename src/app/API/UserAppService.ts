@@ -33,4 +33,13 @@ export class UserAppService {
         const response = await lastValueFrom(observable);
         return response;
     }
+
+    async CheckAlreadyExistsEmail(email: string): Promise<boolean> {
+
+        const observable = this.http.get<{ exists: boolean }>(
+            `${this.baseUrl}/users/CheckAlreadyExistsEmail?email=${email}`
+        );
+        const response = await lastValueFrom(observable);
+        return response.exists;
+    }
 }

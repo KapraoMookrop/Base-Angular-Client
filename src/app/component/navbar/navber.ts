@@ -2,11 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import Swal from 'sweetalert2';
-import { AppStateService } from '../../core/AppStateService';
-import { LoadingService } from '../../core/LoadingService';
-import { AuthService } from '../../core/AuthService';
 import { UserClientData } from '../../types/UserClientData';
+import { BaseComponent } from '../../core/BaseComponent';
 
 @Component({
   selector: 'app-navbar',
@@ -14,15 +11,17 @@ import { UserClientData } from '../../types/UserClientData';
   providers: [],
   templateUrl: './navber.html',
 })
-export class Navbar implements OnInit {
+export class Navbar extends BaseComponent implements OnInit {
   User: UserClientData = {} as UserClientData;
 
-  constructor(public stateService: AppStateService, private loadingService: LoadingService, private authAppService: AuthService) { }
+  constructor() {
+    super();
+  }
 
   ngOnInit() {
   }
 
   getLogoUser() {
-    return this.stateService.user()?.FullName.replaceAll("นาย", "").replaceAll("นางสาว", "").replaceAll("นาง", "").charAt(0) || "";
+    return this.AppStateService.user()?.FullName.replaceAll("นาย", "").replaceAll("นางสาว", "").replaceAll("นาง", "").charAt(0) || "";
   }
 }
